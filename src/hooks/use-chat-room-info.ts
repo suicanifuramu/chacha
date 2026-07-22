@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { getPlot, getRoom } from "@/lib/api"
 import { proxyImage } from "@/lib/api"
 import { preloadImages } from "@/lib/image-preloader"
-import type { Character } from "@/lib/types"
+import type { Character, PlotStatus } from "@/lib/types"
 import { replaceUserVars } from "@/lib/user-vars"
 
 export interface UseChatRoomInfoReturn {
@@ -19,6 +19,7 @@ export interface UseChatRoomInfoReturn {
   plotId: string
   setPlotId: React.Dispatch<React.SetStateAction<string>>
   introContent: string
+  statuses: PlotStatus[]
 }
 
 export function useChatRoomInfo(
@@ -35,6 +36,7 @@ export function useChatRoomInfo(
   const [characters, setCharacters] = useState<Character[]>([])
   const [introContent, setIntroContent] = useState("")
   const [plotId, setPlotId] = useState<string>("")
+  const [statuses, setStatuses] = useState<PlotStatus[]>([])
 
   useEffect(() => {
     if (!roomId) return
@@ -91,6 +93,7 @@ export function useChatRoomInfo(
       const img = proxyImage(bot.thumbnailImage?.url || null)
 
       setIntroContent(bot.firstMessage || "")
+      setStatuses(bot.statuses || [])
 
       if (name) {
         setPlotName(name)
@@ -119,5 +122,6 @@ export function useChatRoomInfo(
     plotId,
     setPlotId,
     introContent,
+    statuses,
   }
 }

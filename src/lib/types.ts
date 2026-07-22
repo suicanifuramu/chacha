@@ -392,4 +392,6 @@ export interface PlotStatus {
   label: string
   type: string
   defaultValue: string
+  sortOrder: number
+  config: unknown | null
 }

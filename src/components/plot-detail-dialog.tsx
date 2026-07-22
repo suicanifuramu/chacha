@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react"
-import { BookOpen, MessageCircle, ScrollText, Users } from "lucide-react"
+import { MessageCircle, ScrollText, Users } from "lucide-react"
 import { toast } from "sonner"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { ResponsiveDialog } from "@/components/ui/responsive-dialog"
@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { getPlot, proxyImage } from "@/lib/api"
 import { renderContentItem } from "@/lib/info-box"
+import { PlotStatusBar } from "@/components/plot-status-bar"
 import { parseBotContents } from "@/hooks/use-chat-messages"
 import { replaceUserVars } from "@/lib/user-vars"
 
@@ -236,6 +237,16 @@ export function PlotDetailDialog({
               </div>
             </div>
           ) : null}
+
+          {/* Statuses */}
+          {d?.statuses && d.statuses.length > 0 && (
+            <PlotStatusBar
+              statuses={d.statuses
+                .filter((s) => s.label)
+                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .map((s) => ({ label: s.label, value: s.defaultValue ?? "" }))}
+            />
+          )}
         </div>
       </div>
 

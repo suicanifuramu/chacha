@@ -4,6 +4,7 @@ import { MessageList } from "@/components/chat/message-list"
 import { ChatInput } from "@/components/chat/chat-input"
 import { RecommendPanel } from "@/components/chat/recommend-panel"
 import { ChatHeader } from "@/components/chat/chat-header"
+import { ChatStatusBar } from "@/components/chat/chat-status-bar"
 import { DeleteModeOverlay } from "@/components/chat/delete-mode-overlay"
 import { ChatOverlays } from "@/components/chat/chat-overlays"
 
@@ -34,6 +35,7 @@ export function ChatPage() {
     plotId,
     setPlotId,
     introContent,
+    statuses,
   } = useChatRoomInfo(roomId)
   const {
     plotDetailOpen,
@@ -205,6 +207,8 @@ export function ChatPage() {
         onResetRoom={handleRoomReset}
         releaseBodyLock={releaseBodyLock}
       />
+
+      <ChatStatusBar statuses={statuses} />
 
       <MessageList
         scrollRef={scrollRef}
