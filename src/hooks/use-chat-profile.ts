@@ -3,12 +3,15 @@ import { toast } from "sonner"
 import {
   getMessages,
   getUserChatProfiles,
+  startRoom,
 } from "@/lib/api"
 import type {
   UserChatProfile,
   RuntimeMessage,
+  Message,
 } from "@/lib/types"
 import type { PlotProfileItem } from "@/components/profile-select-sheet"
+import { normalizeMessages } from "./use-chat-messages"
 import { persistDefaultProfileName } from "@/lib/user-vars"
 
 export interface UseChatProfileDeps {
@@ -82,7 +85,8 @@ export function useChatProfile(
       if (!roomId) return
       try {
         const data = await getMessages(roomId, 50)
-        chatRefs.current.setMessages?.(data.messages || [])
+        const normalized = normalizeMessages([...(data.messages || [])].reverse())
+        chatRefs.current.setMessages?.(normalized)
       } catch {
         // ignore - messages may not exist yet
       }
@@ -98,7 +102,8 @@ export function useChatProfile(
     async (profile: UserChatProfile) => {
       if (!roomId) return
       try {
-        await finalizeProfileStart(profile.name || "プロフィール")
+        await startRoom(roomId, profile.id)
+        await finalizeProfileStart(profile.userAlias || profile.name || "プロフィール")
       } catch (e: unknown) {
         toast.error(
           `チャット開始失敗: ${e instanceof Error ? e.message : String(e)}`
@@ -112,6 +117,7 @@ export function useChatProfile(
     async (profile: PlotProfileItem) => {
       if (!roomId || !plotId) return
       try {
+        await startRoom(roomId, profile.id)
         await finalizeProfileStart(profile.name)
       } catch (e: unknown) {
         toast.error(

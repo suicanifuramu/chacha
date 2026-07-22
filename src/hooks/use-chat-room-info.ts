@@ -18,6 +18,7 @@ export interface UseChatRoomInfoReturn {
   setCharacters: React.Dispatch<React.SetStateAction<Character[]>>
   plotId: string
   setPlotId: React.Dispatch<React.SetStateAction<string>>
+  introContent: string
 }
 
 export function useChatRoomInfo(
@@ -32,6 +33,7 @@ export function useChatRoomInfo(
   const [headerSub, setHeaderSub] = useState("オンライン")
   const [charAvatars, setCharAvatars] = useState<Record<string, string>>({})
   const [characters, setCharacters] = useState<Character[]>([])
+  const [introContent, setIntroContent] = useState("")
   const [plotId, setPlotId] = useState<string>("")
 
   useEffect(() => {
@@ -88,6 +90,8 @@ export function useChatRoomInfo(
       const name = replaceUserVars(bot.name || "")
       const img = proxyImage(bot.thumbnailImage?.url || null)
 
+      setIntroContent(bot.firstMessage || "")
+
       if (name) {
         setPlotName(name)
         sessionStorage.setItem("chat_plot_name", name)
@@ -114,5 +118,6 @@ export function useChatRoomInfo(
     setCharacters,
     plotId,
     setPlotId,
+    introContent,
   }
 }

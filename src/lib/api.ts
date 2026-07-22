@@ -252,11 +252,11 @@ export function getRooms(limit = 30): Promise<ApiRoomsResponse> {
 
 export function createRoom(
   botId: string,
-  userProfileId: string
+  userProfileId?: string
 ): Promise<CreateRoomApiResponse> {
   return post<CreateRoomApiResponse>("/chat/rooms", {
     botId,
-    userProfileId,
+    ...(userProfileId ? { userProfileId } : {}),
   })
 }
 

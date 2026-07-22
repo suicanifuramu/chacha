@@ -3,7 +3,6 @@ import { toast } from "sonner"
 import {
   getRoomByBotId,
   createRoom,
-  startRoom,
   getUserChatProfiles,
   getPlot,
 } from "@/lib/api"
@@ -41,26 +40,22 @@ export async function startNewChat(
       // Create new room
       toast.info("ルームを作成中…")
 
-      // Get user profiles to find a userProfileId
+      // Validate that user has at least one profile
       const profilesData = await getUserChatProfiles(10)
       const profiles = profilesData.chatUserProfiles || []
       persistDefaultProfileName(profiles)
-      const userProfileId = profiles[0]?.id
-
-      if (!userProfileId) {
+      if (!profiles.length) {
         toast.error("ユーザープロフィールがありません")
         return
       }
 
-      const createRes = await createRoom(plotId, userProfileId)
+      const createRes = await createRoom(plotId)
       const newRoomId = createRes.room?.id
       if (!newRoomId) {
         toast.error("ルーム作成に失敗しました")
         return
       }
 
-      // Start the room
-      await startRoom(newRoomId, userProfileId)
       roomId = newRoomId
     }
 

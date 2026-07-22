@@ -7,9 +7,9 @@ import { useRankingPlots } from "@/hooks/use-ranking-plots"
 import { usePlotNavigation } from "@/hooks/use-plot-navigation"
 
 const TABS = [
-  { value: "TRENDING", label: "トレンド" },
-  { value: "BEST", label: "ベスト" },
-  { value: "NEW", label: "新着" },
+  { value: "daily", label: "日間" },
+  { value: "weekly", label: "週間" },
+  { value: "monthly", label: "月間" },
 ] as const
 
 export function RankingPage() {

@@ -3,8 +3,6 @@ import { toast } from "sonner"
 import {
   deleteRoom,
   createRoom,
-  startRoom,
-  getUserChatProfiles,
 } from "@/lib/api"
 import { useLongPress } from "./use-long-press"
 
@@ -43,26 +41,13 @@ export function useChatActions(deps: UseChatActionsDeps): UseChatActionsReturn {
       // Delete current room
       await deleteRoom(roomId)
 
-      // Get user profiles
-      const profilesData = await getUserChatProfiles(10)
-      const profiles = profilesData.chatUserProfiles || []
-      const userProfileId = profiles[0]?.id
-
-      if (!userProfileId) {
-        toast.error("ユーザープロフィールがありません")
-        return
-      }
-
       // Create new room
-      const createRes = await createRoom(plotId, userProfileId)
+      const createRes = await createRoom(plotId)
       const newRoomId = createRes.room?.id
       if (!newRoomId) {
         toast.error("ルーム作成に失敗しました")
         return
       }
-
-      // Start the room
-      await startRoom(newRoomId, userProfileId)
 
       toast.success("ルームをリセットしました")
       navigate(`/chat/${newRoomId}`)

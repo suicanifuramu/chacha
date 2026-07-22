@@ -33,6 +33,7 @@ export function ChatPage() {
     characters,
     plotId,
     setPlotId,
+    introContent,
   } = useChatRoomInfo(roomId)
   const {
     plotDetailOpen,
@@ -176,6 +177,7 @@ export function ChatPage() {
 
   const { handleRoomReset, longPressHandlers } = useChatActions({
     plotId,
+    roomId,
     navigate,
     releaseBodyLock,
     deleteMode,
@@ -230,6 +232,8 @@ export function ChatPage() {
         onSwitchCandidate={handleSwitchCandidate}
         onEditMessage={handleEditMessage}
         onSelectMsgForDelete={setSelectedMsgId}
+        introContent={needsInit ? introContent : null}
+        profileSheetOpen={profileSheetOpen}
       />
 
       <DeleteModeOverlay

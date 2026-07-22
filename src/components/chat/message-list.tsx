@@ -1,4 +1,4 @@
-import { useRef, useMemo, memo } from "react"
+import { useRef, useMemo, memo, useEffect } from "react"
 import { ArrowDown, ChevronLeft, ChevronRight, Pencil, RefreshCw } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { StreamingDots } from "./streaming-dots"
 import { cn } from "@/lib/utils"
 import { renderContentItem } from "@/lib/info-box"
+import { parseBotContents } from "@/hooks/use-chat-messages"
+import { replaceUserVars } from "@/lib/user-vars"
 import type {
   RuntimeMessage,
   ContentItem,
@@ -41,6 +43,8 @@ interface MessageListProps {
   onSwitchCandidate: (msgId: string, direction: "prev" | "next") => Promise<boolean>
   onEditMessage: (msgId: string, candidateId: string, text: string) => void
   onSelectMsgForDelete: (msgId: string) => void
+  introContent?: string | null
+  profileSheetOpen?: boolean
 }
 
 export const MessageList = memo(function MessageList({
@@ -67,6 +71,8 @@ export const MessageList = memo(function MessageList({
   onSwitchCandidate,
   onEditMessage,
   onSelectMsgForDelete,
+  introContent,
+  profileSheetOpen,
 }: MessageListProps) {
   const touchStateRef = useRef<{
     x: number
@@ -74,6 +80,39 @@ export const MessageList = memo(function MessageList({
     isScrolling: boolean
     isSwiping: boolean
   } | null>(null)
+
+  const prevSheetOpen = useRef(profileSheetOpen)
+  useEffect(() => {
+    if (!introContent || messages.length > 0) return
+    const doScroll = () => {
+      const viewport = scrollRef.current?.querySelector(
+        "[data-radix-scroll-area-viewport]"
+      ) as HTMLElement | null
+      if (viewport) viewport.scrollTop = viewport.scrollHeight
+    }
+    requestAnimationFrame(() => {
+      doScroll()
+      setTimeout(doScroll, 100)
+      setTimeout(doScroll, 300)
+    })
+  }, [introContent, messages.length, scrollRef])
+
+  useEffect(() => {
+    if (prevSheetOpen.current && !profileSheetOpen && introContent && messages.length === 0) {
+      const doScroll = () => {
+        const viewport = scrollRef.current?.querySelector(
+          "[data-radix-scroll-area-viewport]"
+        ) as HTMLElement | null
+        if (viewport) viewport.scrollTop = viewport.scrollHeight
+      }
+      requestAnimationFrame(() => {
+        doScroll()
+        setTimeout(doScroll, 100)
+        setTimeout(doScroll, 300)
+      })
+    }
+    prevSheetOpen.current = profileSheetOpen
+  }, [profileSheetOpen, introContent, messages.length, scrollRef])
 
   const renderedMessages = useMemo(() => {
     const runtimeMsgs = messages
@@ -390,6 +429,20 @@ export const MessageList = memo(function MessageList({
                 </p>
               )}
             </div>
+            {messages.length === 0 && introContent ? (
+              <div className="flex flex-col gap-2">
+                {parseBotContents(replaceUserVars(introContent)).map((item, i) =>
+                  renderContentItem(item, "intro-", i, {
+                    charAvatars,
+                    deleteMode: false,
+                    streaming: false,
+                    onUserMessageTap: () => {},
+                    onAvatarTap,
+                    streamMode: false,
+                  })
+                )}
+              </div>
+            ) : null}
             {renderedMessages}
             {streamContents !== null &&
               (streamContents.length === 0 ? (
