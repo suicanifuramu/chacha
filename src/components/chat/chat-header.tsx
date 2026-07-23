@@ -66,17 +66,26 @@ export const ChatHeader = memo(function ChatHeader({
         variant="ghost"
         size="icon"
         onClick={() => navigate("/rooms")}
-        aria-label="戻る"
+        aria-label="チャットルーム一覧に戻る"
       >
         <ArrowLeft className="size-5" />
       </Button>
-      <Avatar className="size-9">
+      <Avatar className="size-9" aria-hidden={true}>
         <CachedAvatarImage src={plotImg} alt={plotName} />
         <AvatarFallback>{plotName[0]}</AvatarFallback>
       </Avatar>
       <div
         className="min-w-0 flex-1 cursor-pointer"
         onClick={onHeaderClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            onHeaderClick()
+          }
+        }}
+        aria-label={`プロット: ${plotName}`}
       >
         <p className="truncate text-sm font-semibold">{plotName}</p>
         <p className="truncate text-xs text-muted-foreground">{headerSub}</p>
@@ -84,7 +93,7 @@ export const ChatHeader = memo(function ChatHeader({
       <Button
         variant="ghost"
         size="icon"
-        aria-label="削除モード"
+        aria-label={deleteMode ? "削除モード中：タップして終了" : "メッセージを削除する"}
         className={cn(deleteMode && "text-destructive", "select-none")}
         {...onLongPressHandlers}
       >

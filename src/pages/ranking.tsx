@@ -5,6 +5,7 @@ import { PlotCard } from "@/components/plot-card"
 import { PlotDetailDialog } from "@/components/plot-detail-dialog"
 import { useRankingPlots } from "@/hooks/use-ranking-plots"
 import { usePlotNavigation } from "@/hooks/use-plot-navigation"
+import { useEffect } from "react"
 
 const TABS = [
   { value: "daily", label: "日間" },
@@ -13,6 +14,10 @@ const TABS = [
 ] as const
 
 export function RankingPage() {
+  useEffect(() => {
+    document.title = "ランキング - Chacha Chat"
+  }, [])
+
   const { tab, setTab, displayed, loading, hasMore, sentinelRef } =
     useRankingPlots()
   const {
@@ -26,7 +31,7 @@ export function RankingPage() {
   return (
     <div className="animate-fade-in">
       <header className="px-5 pt-[max(18px,env(safe-area-inset-top))] pb-1">
-        <h1 className="text-2xl font-bold">ランキング</h1>
+        <h1 className="text-2xl font-bold text-wrap balance">ランキング</h1>
       </header>
 
       <div className="px-5 py-3">
@@ -50,10 +55,11 @@ export function RankingPage() {
             </div>
           ))}
         </div>
-      ) : displayed.length === 0 ? (
-        <div className="flex items-center justify-center py-20 text-muted-foreground">
-          <p>データがありません</p>
-        </div>
+        ) : displayed.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-4 py-20 text-muted-foreground">
+            <p>データがありません</p>
+            <p className="text-xs">他の期間を選択してみてください</p>
+          </div>
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 px-5">
           {displayed.map((plot, i) => (

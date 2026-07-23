@@ -13,11 +13,16 @@ export function ChatStatusBar({ statuses }: ChatStatusBarProps) {
 
   return (
     <div className="overflow-x-auto border-b border-border">
-      <div className="flex items-center gap-2 px-3 py-1.5">
+      <div
+        className="flex items-center gap-2 px-3 py-1.5"
+        role="status"
+        aria-label="プロットステータス"
+      >
         {items.map((s) => (
           <span
             key={s.publicId}
             className="shrink-0 rounded-full bg-secondary px-3 py-1 text-xs text-foreground/70 whitespace-nowrap"
+            aria-label={`${s.label}: ${s.defaultValue || "なし"}`}
           >
             <span className="font-semibold">{s.label}</span>
             {s.defaultValue ? ` ${s.defaultValue}` : ""}

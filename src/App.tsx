@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom"
+import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { Suspense, lazy, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { AppShell } from "@/components/layout/app-shell"
@@ -32,6 +32,31 @@ function PageSpinner() {
 
 export default function App() {
   const { ready } = useAuth()
+  const location = useLocation()
+
+  // Save scroll position before navigation
+  useEffect(() => {
+    const key = `scroll_${location.pathname}`
+    const saveScroll = () => {
+      sessionStorage.setItem(key, String(window.scrollY))
+    }
+    window.addEventListener("scroll", saveScroll, { passive: true })
+    return () => window.removeEventListener("scroll", saveScroll)
+  }, [location.pathname])
+
+  // Restore scroll position on navigation
+  useEffect(() => {
+    const key = `scroll_${location.pathname}`
+    const saved = sessionStorage.getItem(key)
+    if (saved) {
+      const y = parseInt(saved, 10)
+      if (!isNaN(y)) {
+        window.scrollTo(0, y)
+      }
+    } else {
+      window.scrollTo(0, 0)
+    }
+  }, [location.pathname])
 
   // Ensure the default talk-profile name is persisted so client-rendered
   // `{{user}}` placeholders (plot title / description) can be substituted.

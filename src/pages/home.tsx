@@ -1,5 +1,6 @@
 import { RefreshCw } from "lucide-react"
 import { toast } from "sonner"
+import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
@@ -9,6 +10,10 @@ import { useHomePlots } from "@/hooks/use-home-plots"
 import { usePlotNavigation } from "@/hooks/use-plot-navigation"
 
 export function HomePage() {
+  useEffect(() => {
+    document.title = "おすすめ - Chacha Chat"
+  }, [])
+
   const { plots, loading, loadingMore, hasMore, sentinelRef, loadPlots } =
     useHomePlots()
   const {
@@ -23,7 +28,7 @@ export function HomePage() {
     <div className="animate-fade-in">
       <header className="flex items-center justify-between px-5 pt-[max(18px,env(safe-area-inset-top))] pb-3">
         <div>
-          <h1 className="text-2xl font-bold">おすすめ</h1>
+          <h1 className="text-2xl font-bold text-wrap balance">おすすめ</h1>
         </div>
         <Button
           variant="ghost"
@@ -48,10 +53,11 @@ export function HomePage() {
             </div>
           ))}
         </div>
-      ) : plots.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-          <p>コンテンツがありません</p>
-        </div>
+        ) : plots.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-4 py-20 text-muted-foreground">
+            <p>コンテンツがありません</p>
+            <p className="text-xs">更新ボタンを押して再度お試しください</p>
+          </div>
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 px-5">
           {plots.map((plot, i) => (

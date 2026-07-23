@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import {
   createUserChatProfile,
@@ -20,6 +20,18 @@ export function useSettingsProfiles() {
   const [profileImageUrl, setProfileImageUrl] = useState("")
   const [profileIsDefault, setProfileIsDefault] = useState(false)
   const [profileSaving, setProfileSaving] = useState(false)
+  const [isFormDirty, setIsFormDirty] = useState(false)
+
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (isFormDirty) {
+        e.preventDefault()
+        e.returnValue = ""
+      }
+    }
+    window.addEventListener("beforeunload", handler)
+    return () => window.removeEventListener("beforeunload", handler)
+  }, [isFormDirty])
 
   const loadProfiles = async () => {
     setLoadingProfiles(true)
@@ -42,6 +54,7 @@ export function useSettingsProfiles() {
     setProfileDesc("")
     setProfileImageUrl("")
     setProfileIsDefault(false)
+    setIsFormDirty(false)
   }
 
   const handleSaveProfile = async () => {
@@ -102,13 +115,14 @@ export function useSettingsProfiles() {
     }
   }
 
-  const handleEdit = (profile: UserChatProfile) => {
+   const handleEdit = (profile: UserChatProfile) => {
     setEditId(profile.id)
     setProfileName(profile.userAlias || profile.name || "")
     setProfileGender(profile.gender || "MALE")
     setProfileDesc(profile.persona || profile.description || "")
     setProfileImageUrl(profile.profileImageUrl || "")
     setProfileIsDefault(profile.isDefault || profile.selected || false)
+    setIsFormDirty(false)
   }
 
   return {
@@ -126,11 +140,13 @@ export function useSettingsProfiles() {
     setProfileImageUrl,
     profileIsDefault,
     setProfileIsDefault,
-    profileSaving,
+     profileSaving,
     handleSaveProfile,
     handleSetDefault,
     handleDelete,
     handleEdit,
     resetForm,
+    isFormDirty,
+    setIsFormDirty,
   }
 }

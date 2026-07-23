@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react"
+import { useCallback, useRef, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { MessageList } from "@/components/chat/message-list"
 import { ChatInput } from "@/components/chat/chat-input"
@@ -24,6 +24,13 @@ import type { RuntimeMessage } from "@/lib/types"
 export function ChatPage() {
   const { roomId } = useParams<{ roomId: string }>()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    document.title = "チャット - Chacha Chat"
+    return () => {
+      document.title = "Chacha Chat"
+    }
+  }, [])
 
   const {
     plotName,

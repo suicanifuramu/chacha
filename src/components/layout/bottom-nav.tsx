@@ -29,14 +29,15 @@ export function BottomNav() {
                 window.dispatchEvent(new Event("refreshHome"))
               }
             }}
-            className={({ isActive }: { isActive: boolean }) =>
-              cn(
-                "flex min-h-11 min-w-11 flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs transition-colors",
-                isActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              )
-            }
+             className={({ isActive }: { isActive: boolean }) =>
+               cn(
+                 "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background",
+                 "flex min-h-11 min-w-11 flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs transition-colors",
+                 isActive
+                   ? "text-primary"
+                   : "text-muted-foreground hover:text-foreground"
+               )
+             }
           >
             <Icon className="size-5" />
             <span>{label}</span>

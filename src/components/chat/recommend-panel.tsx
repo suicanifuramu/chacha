@@ -73,11 +73,14 @@ export function RecommendPanel({
           className="size-7"
           disabled={recPage <= 0}
           onClick={() => onPageChange(Math.max(0, recPage - 1))}
-          aria-label="前の推薦文"
+          aria-label="前の推薦文ページ"
         >
           <ChevronLeft className="size-4" />
         </Button>
-        <span className="min-w-8 text-center text-xs text-muted-foreground tabular-nums">
+        <span
+          className="min-w-8 text-center text-xs text-muted-foreground tabular-nums"
+          aria-label={`ページ ${recPage + 1} / ${Math.ceil(recItems.length / 3)}`}
+        >
           {recItems.length > 0
             ? `${recPage + 1}/${Math.ceil(recItems.length / 3)}`
             : "-"}
@@ -95,7 +98,7 @@ export function RecommendPanel({
               onPageChange(recPage + 1)
             }
           }}
-          aria-label="次の推薦文"
+          aria-label="次の推薦文ページ"
         >
           <ChevronRight className="size-4" />
         </Button>

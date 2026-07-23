@@ -2,7 +2,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 export function StreamingDots() {
   return (
-    <div className="my-1 flex items-center gap-2">
+    <div
+      className="my-1 flex items-center gap-2"
+      role="status"
+      aria-label="メッセージを生成中"
+    >
       <Avatar className="size-8 shrink-0">
         <AvatarFallback>…</AvatarFallback>
       </Avatar>

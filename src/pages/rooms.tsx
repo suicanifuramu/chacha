@@ -30,6 +30,10 @@ function getPreview(lastMessage: Message | undefined) {
 }
 
 export function RoomsPage() {
+  useEffect(() => {
+    document.title = "チャット - Chacha Chat"
+  }, [])
+
   const navigate = useNavigate()
   const [rooms, setRooms] = useState<Room[]>([])
   const [loading, setLoading] = useState(true)
@@ -80,7 +84,7 @@ export function RoomsPage() {
   return (
     <div className="animate-fade-in">
       <header className="px-5 pt-[max(18px,env(safe-area-inset-top))] pb-3">
-        <h1 className="text-2xl font-bold">チャット</h1>
+        <h1 className="text-2xl font-bold text-wrap balance">チャット</h1>
       </header>
 
       <div className="px-5">
@@ -97,8 +101,9 @@ export function RoomsPage() {
             ))}
           </div>
         ) : rooms.length === 0 ? (
-          <div className="flex items-center justify-center py-20 text-muted-foreground">
+          <div className="flex flex-col items-center justify-center gap-4 py-20 text-muted-foreground">
             <p>チャットルームがありません</p>
+            <p className="text-xs">ホームからプロットを選択してチャットを開始しましょう</p>
           </div>
         ) : (
           <div className="flex flex-col overflow-x-hidden">

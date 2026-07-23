@@ -125,6 +125,14 @@ export const MessageBubble = memo(function MessageBubble({
         <Avatar
           className="size-8 shrink-0 cursor-pointer"
           onClick={onAvatarTap}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault()
+              onAvatarTap?.()
+            }
+          }}
+          aria-label={content.speakerName ? `キャラクター: ${content.speakerName}` : "キャラクター"}
         >
           <CachedAvatarImage src={avatarUrl} />
           <AvatarFallback>{(content.speakerName || "?")[0]}</AvatarFallback>

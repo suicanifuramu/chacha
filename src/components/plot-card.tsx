@@ -45,10 +45,16 @@ export const PlotCard = memo(function PlotCard({
         className
       )}
       onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onClick?.()}
-    >
+       role="button"
+       tabIndex={0}
+       onKeyDown={(e) => {
+         if (e.key === "Enter" || e.key === " ") {
+           e.preventDefault()
+           onClick?.()
+         }
+       }}
+       aria-label={plot.name ? `プロット: ${plot.name}` : "プロットを開く"}
+     >
       {plot.rank && (
         <div className="absolute top-2 left-2 z-10 flex size-7 items-center justify-center rounded-full bg-primary/90 text-xs font-bold text-primary-foreground">
           {plot.rank}

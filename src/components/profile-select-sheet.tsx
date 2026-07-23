@@ -49,7 +49,7 @@ function CreateProfileSheet({
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onProfileCreated: (profile: UserChatProfile) => Promise<void>
+   onProfileCreated?: (profile: UserChatProfile) => Promise<void>
   editProfile?: UserChatProfile | null
   onProfileUpdated?: (profile: UserChatProfile) => Promise<void>
   variant: "start" | "change"
@@ -134,7 +134,7 @@ function CreateProfileSheet({
           thumbnailImageId: profileImageUrl || undefined,
           isDefault,
         })
-        await onProfileCreated(res.chatUserProfile)
+        await onProfileCreated?.(res.chatUserProfile)
       }
     } catch (e: unknown) {
       toast.error(
@@ -178,19 +178,30 @@ function CreateProfileSheet({
           />
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">プロフィール名</label>
+            <label htmlFor="profile-name" className="text-sm font-medium">
+              プロフィール名
+            </label>
             <Input
+              id="profile-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="プロフィール名を入力"
+              placeholder="プロフィール名を入力…"
               disabled={saving}
+              autoComplete="name"
+              spellCheck={false}
             />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">性別</label>
-            <div className="flex gap-2">
+            <div
+              className="flex gap-2"
+              role="radiogroup"
+              aria-label="性別を選択"
+            >
               <button
                 type="button"
+                role="radio"
+                aria-checked={gender === "MALE"}
                 className={cn(
                   "flex-1 rounded-lg py-2 text-sm font-medium transition-colors cursor-pointer",
                   gender === "MALE"
@@ -204,6 +215,8 @@ function CreateProfileSheet({
               </button>
               <button
                 type="button"
+                role="radio"
+                aria-checked={gender === "FEMALE"}
                 className={cn(
                   "flex-1 rounded-lg py-2 text-sm font-medium transition-colors cursor-pointer",
                   gender === "FEMALE"
@@ -218,13 +231,17 @@ function CreateProfileSheet({
             </div>
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">説明</label>
+            <label htmlFor="profile-description" className="text-sm font-medium">
+              説明
+            </label>
             <Textarea
+              id="profile-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="説明を入力（任意）"
+              placeholder="説明を入力（任意）…"
               rows={3}
               disabled={saving}
+              spellCheck={true}
             />
           </div>
           <div className="flex items-center justify-between rounded-lg bg-secondary/30 px-4 py-3">

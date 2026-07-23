@@ -75,7 +75,8 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(functio
           size="icon"
           className={cn("shrink-0", recVisible && "text-primary")}
           onClick={onToggleRecommend}
-          aria-label="推薦文"
+          aria-label={recVisible ? "推薦文を非表示" : "推薦文を表示"}
+          aria-pressed={recVisible}
         >
           <Star className="size-5" />
         </Button>
@@ -96,6 +97,7 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(functio
             rows={1}
             style={{ fontSize: "16px" }}
             inputMode="text"
+            aria-label="メッセージ入力"
           />
           <Button
             variant="outline"
@@ -115,10 +117,10 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(functio
             ;(inputRef as React.RefObject<HTMLTextAreaElement | null>)?.current?.focus({ preventScroll: true })
           }}
           onClick={onSend}
-          aria-label="送信"
+          aria-label={sending ? "送信中…" : "送信"}
         >
           {sending ? (
-            <Spinner className="size-4" />
+            <Spinner className="size-4" aria-label="送信中" />
           ) : (
             <Send className="size-4" />
           )}

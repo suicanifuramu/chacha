@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Camera } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -38,6 +38,10 @@ function formatSeconds(s: number) {
 }
 
 export function SettingsPage() {
+  useEffect(() => {
+    document.title = "設定 - Chacha Chat"
+  }, [])
+
   const {
     refreshToken,
     setRefreshToken,
@@ -70,6 +74,7 @@ export function SettingsPage() {
     handleDelete,
     handleEdit,
     resetForm,
+    setIsFormDirty,
   } = useSettingsProfiles()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -95,7 +100,7 @@ export function SettingsPage() {
   return (
     <div className="animate-fade-in">
       <header className="px-5 pt-[max(18px,env(safe-area-inset-top))] pb-3">
-        <h1 className="text-2xl font-bold">設定</h1>
+        <h1 className="text-2xl font-bold text-wrap balance">設定</h1>
       </header>
 
       <div className="flex flex-col gap-4 px-5 pb-8">
@@ -124,12 +129,18 @@ export function SettingsPage() {
             </div>
             <Separator />
             <div className="flex flex-col gap-3">
-              <label className="text-sm font-medium">Refresh Token</label>
+              <label htmlFor="refresh-token" className="text-sm font-medium">
+                Refresh Token
+              </label>
               <Textarea
+                id="refresh-token"
                 rows={2}
                 value={refreshToken}
                 onChange={(e) => setRefreshToken(e.target.value)}
                 className="font-mono text-xs"
+                placeholder="リフレッシュトークンを入力..."
+                autoComplete="new-password"
+                spellCheck={false}
               />
             </div>
             <div className="flex flex-wrap gap-2">
@@ -307,35 +318,55 @@ export function SettingsPage() {
               />
 
               <Input
-                placeholder="名前"
+                id="profile-name"
+                placeholder="名前…"
                 value={profileName}
-                onChange={(e) => setProfileName(e.target.value)}
+                onChange={(e) => {
+                  setProfileName(e.target.value)
+                  setIsFormDirty(true)
+                }}
+                autoComplete="name"
+                spellCheck={false}
               />
               <div className="space-y-2">
                 <label className="text-sm font-medium">性別</label>
-                <div className="flex gap-2">
+                <div
+                  className="flex gap-2"
+                  role="radiogroup"
+                  aria-label="性別を選択"
+                >
                   <button
                     type="button"
+                    role="radio"
+                    aria-checked={profileGender === "MALE"}
                     className={cn(
                       "flex-1 rounded-lg py-2 text-sm font-medium transition-colors cursor-pointer",
                       profileGender === "MALE"
                         ? "bg-primary text-primary-foreground"
                         : "bg-secondary/50 text-muted-foreground hover:bg-secondary"
                     )}
-                    onClick={() => setProfileGender("MALE")}
+                    onClick={() => {
+                      setProfileGender("MALE")
+                      setIsFormDirty(true)
+                    }}
                     disabled={profileSaving}
                   >
                     男性
                   </button>
                   <button
                     type="button"
+                    role="radio"
+                    aria-checked={profileGender === "FEMALE"}
                     className={cn(
                       "flex-1 rounded-lg py-2 text-sm font-medium transition-colors cursor-pointer",
                       profileGender === "FEMALE"
                         ? "bg-primary text-primary-foreground"
                         : "bg-secondary/50 text-muted-foreground hover:bg-secondary"
                     )}
-                    onClick={() => setProfileGender("FEMALE")}
+                    onClick={() => {
+                      setProfileGender("FEMALE")
+                      setIsFormDirty(true)
+                    }}
                     disabled={profileSaving}
                   >
                     女性
@@ -343,10 +374,15 @@ export function SettingsPage() {
                 </div>
               </div>
               <Textarea
-                placeholder="説明"
+                id="profile-desc"
+                placeholder="説明…"
                 rows={4}
                 value={profileDesc}
-                onChange={(e) => setProfileDesc(e.target.value)}
+                onChange={(e) => {
+                  setProfileDesc(e.target.value)
+                  setIsFormDirty(true)
+                }}
+                spellCheck={true}
               />
               <div className="flex items-center justify-between rounded-lg bg-secondary/30 px-4 py-3">
                 <label className="text-sm font-medium">デフォルトに設定</label>
@@ -358,7 +394,10 @@ export function SettingsPage() {
                       ? "bg-primary text-primary-foreground"
                       : "bg-secondary/50 text-muted-foreground hover:bg-secondary"
                   )}
-                  onClick={() => setProfileIsDefault(!profileIsDefault)}
+                   onClick={() => {
+                     setProfileIsDefault(!profileIsDefault)
+                     setIsFormDirty(true)
+                   }}
                   disabled={profileSaving}
                 >
                   {profileIsDefault ? "ON" : "OFF"}
@@ -372,7 +411,10 @@ export function SettingsPage() {
                 )}
                 <Button
                   size="sm"
-                  onClick={handleSaveProfile}
+                  onClick={async () => {
+                    await handleSaveProfile()
+                    setIsFormDirty(false)
+                  }}
                   disabled={profileSaving}
                 >
                   {profileSaving && <Spinner className="mr-1 size-3" />}
@@ -402,9 +444,9 @@ export function SettingsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Chacha Chat v2.0.0 — React + shadcn/ui
+              <span translate="no">Chacha Chat</span> v2.0.0 — React + shadcn/ui
             </p>
-            <p className="text-sm text-muted-foreground">API: anirole.com</p>
+            <p className="text-sm text-muted-foreground">API: <span translate="no">anirole.com</span></p>
           </CardContent>
         </Card>
 

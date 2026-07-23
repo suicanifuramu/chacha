@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 import { getDailyRanking, getWeeklyRanking, getMonthlyRanking, botToPlot } from "@/lib/api"
 import { preloadImagesAsync } from "@/lib/image-preloader"
@@ -17,12 +18,18 @@ export interface UseRankingPlotsReturn {
 }
 
 export function useRankingPlots(): UseRankingPlotsReturn {
-  const [tab, setTab] = useState("daily")
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [tab, setTab] = useState(searchParams.get("tab") || "daily")
   const [allItems, setAllItems] = useState<Plot[]>([])
   const [displayed, setDisplayed] = useState<Plot[]>([])
   const [loading, setLoading] = useState(true)
   const [hasMore, setHasMore] = useState(true)
   const sentinelRef = useRef<HTMLDivElement>(null)
+
+  const handleSetTab = useCallback((v: string) => {
+    setTab(v)
+    setSearchParams({ tab: v })
+  }, [setSearchParams])
 
   const loadRanking = useCallback(async (type: string) => {
     setLoading(true)
@@ -90,7 +97,7 @@ export function useRankingPlots(): UseRankingPlotsReturn {
 
   return {
     tab,
-    setTab,
+    setTab: handleSetTab,
     displayed,
     loading,
     hasMore,
