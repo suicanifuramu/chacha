@@ -146,7 +146,7 @@ export async function preloadImages(
   options: PreloadOptions = {}
 ): Promise<{ success: string[]; failed: string[] }> {
   const {
-    concurrency = 6,
+    concurrency = 20,
     priority = "low",
     signal,
     scheduling = "concurrent",
