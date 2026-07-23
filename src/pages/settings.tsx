@@ -17,6 +17,8 @@ import { imageIdToUrl } from "@/lib/api"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Spinner } from "@/components/ui/spinner"
 import { ImageCropDialog } from "@/components/image-crop-dialog"
+import { GoogleLoginButton } from "@/components/google-login-button"
+import { useAuth } from "@/lib/auth-context"
 import { useSettingsSession } from "@/hooks/use-settings-session"
 import { useSettingsOverview } from "@/hooks/use-settings-overview"
 import { useSettingsProfiles } from "@/hooks/use-settings-profiles"
@@ -42,6 +44,7 @@ export function SettingsPage() {
     document.title = "設定 - Chacha Chat"
   }, [])
 
+  const { authenticated } = useAuth()
   const {
     refreshToken,
     setRefreshToken,
@@ -127,6 +130,14 @@ export function SettingsPage() {
                 </div>
               ))}
             </div>
+            {!authenticated && (
+              <div className="flex flex-col items-center gap-2 py-2">
+                <GoogleLoginButton />
+                <p className="text-xs text-muted-foreground">
+                  Googleアカウントでログイン
+                </p>
+              </div>
+            )}
             <Separator />
             <div className="flex flex-col gap-3">
               <label htmlFor="refresh-token" className="text-sm font-medium">

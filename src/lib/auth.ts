@@ -276,6 +276,47 @@ export async function ensureAccessToken(): Promise<string | null> {
   return refreshSession()
 }
 
+const IDP_BASE = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp"
+
+export async function exchangeGoogleToken(googleAccessToken: string): Promise<void> {
+  const params = new URLSearchParams({
+    access_token: googleAccessToken,
+    providerId: "google.com",
+  })
+
+  const res = await fetch(`${IDP_BASE}?key=${FIREBASE_API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      postBody: params.toString(),
+      requestUri: window.location.origin,
+      returnIdpCredential: true,
+      returnSecureToken: true,
+    }),
+  })
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "")
+    throw new Error(`Googleログインに失敗しました (${res.status}): ${body}`)
+  }
+
+  const data = (await res.json()) as {
+    idToken?: string
+    refreshToken?: string
+  }
+
+  if (!data.idToken) throw new Error("Firebase ID Tokenが取得できませんでした")
+
+  storeAccessToken(data.idToken)
+  if (data.refreshToken) storeRefreshToken(data.refreshToken)
+  scheduleRefresh()
+  window.dispatchEvent(
+    new CustomEvent("chacha-auth-updated", {
+      detail: getAuthState(),
+    })
+  )
+}
+
 function scheduleRefresh(): void {
   clearRefreshTimer()
   if (!accessToken || !savedRefreshToken) return
