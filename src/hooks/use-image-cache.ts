@@ -5,7 +5,7 @@ import {
   memoryCache,
   subscribeToCacheClear,
 } from "@/lib/image-cache"
-import { runStartupCleanup, startPeriodicCleanup } from "@/lib/cache-cleanup"
+import { startPeriodicCleanup } from "@/lib/cache-cleanup"
 
 let cleanupInitialized = false
 
@@ -43,7 +43,6 @@ export function useImageCache(
   useEffect(() => {
     if (!cleanupInitialized) {
       cleanupInitialized = true
-      runStartupCleanup()
       startPeriodicCleanup()
     }
   }, [])

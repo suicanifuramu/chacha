@@ -1,5 +1,7 @@
 import { useCallback, useRef, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { releasePinnedUrls } from "@/lib/image-cache"
+import { deleteFromCacheAPI } from "@/lib/cache-db"
 import { MessageList } from "@/components/chat/message-list"
 import { ChatInput } from "@/components/chat/chat-input"
 import { RecommendPanel } from "@/components/chat/recommend-panel"
@@ -43,6 +45,7 @@ export function ChatPage() {
     setPlotId,
     introContent,
     statuses,
+    roomImageUrls,
   } = useChatRoomInfo(roomId)
   const {
     plotDetailOpen,
@@ -194,6 +197,19 @@ export function ChatPage() {
     enterDeleteMode,
     onResetConfirmOpen: handleResetConfirmOpen,
   })
+
+  useEffect(() => {
+    return () => {
+      const released = releasePinnedUrls(roomImageUrls)
+      deleteFromCacheAPI(released)
+    }
+  }, [roomImageUrls, roomId])
+
+  const handleExitRoom = useCallback(() => {
+    const released = releasePinnedUrls(roomImageUrls)
+    deleteFromCacheAPI(released)
+  }, [roomImageUrls])
+
   return (
     <div
       ref={containerRef}
@@ -213,6 +229,7 @@ export function ChatPage() {
         onHeaderClick={handleHeaderClick}
         onResetRoom={handleRoomReset}
         releaseBodyLock={releaseBodyLock}
+        onExitRoom={handleExitRoom}
       />
 
       <ChatStatusBar statuses={statuses} />

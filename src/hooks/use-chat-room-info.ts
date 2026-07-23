@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { getPlot, getRoom } from "@/lib/api"
 import { proxyImage } from "@/lib/api"
 import { preloadImages } from "@/lib/image-preloader"
+import { pinUrls } from "@/lib/image-cache"
 import type { Character, PlotStatus } from "@/lib/types"
 import { replaceUserVars } from "@/lib/user-vars"
 
@@ -20,6 +21,7 @@ export interface UseChatRoomInfoReturn {
   setPlotId: React.Dispatch<React.SetStateAction<string>>
   introContent: string
   statuses: PlotStatus[]
+  roomImageUrls: string[]
 }
 
 export function useChatRoomInfo(
@@ -37,6 +39,8 @@ export function useChatRoomInfo(
   const [introContent, setIntroContent] = useState("")
   const [plotId, setPlotId] = useState<string>("")
   const [statuses, setStatuses] = useState<PlotStatus[]>([])
+  const [roomImageUrls, setRoomImageUrls] = useState<string[]>([])
+  const roomImageUrlsRef = useRef<string[]>([])
 
   useEffect(() => {
     if (!roomId) return
@@ -103,6 +107,13 @@ export function useChatRoomInfo(
         setPlotImg(img)
         sessionStorage.setItem("chat_plot_img", img)
       }
+
+      const urls = [img, ...charImageUrls].filter(Boolean)
+      if (urls.length > 0) {
+        pinUrls(urls)
+        roomImageUrlsRef.current = urls
+        setRoomImageUrls(urls)
+      }
     } catch {
       // ignore
     }
@@ -123,5 +134,6 @@ export function useChatRoomInfo(
     setPlotId,
     introContent,
     statuses,
+    roomImageUrls,
   }
 }

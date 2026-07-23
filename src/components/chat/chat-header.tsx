@@ -41,6 +41,7 @@ interface ChatHeaderProps {
   onHeaderClick: () => void
   onResetRoom: () => void
   releaseBodyLock: () => void
+  onExitRoom?: () => void
 }
 
 export const ChatHeader = memo(function ChatHeader({
@@ -57,6 +58,7 @@ export const ChatHeader = memo(function ChatHeader({
   onHeaderClick,
   onResetRoom,
   releaseBodyLock,
+  onExitRoom,
 }: ChatHeaderProps) {
   const navigate = useNavigate()
 
@@ -123,6 +125,7 @@ export const ChatHeader = memo(function ChatHeader({
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={async () => {
+                onExitRoom?.()
                 releaseBodyLock()
                 try {
                   await deleteRoom(roomId!)

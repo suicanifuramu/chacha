@@ -2,6 +2,7 @@ const MAX_SIZE = 100
 const _map = new Map<string, string>()
 const _fetchPromises = new Map<string, Promise<string>>()
 const _clearListeners = new Set<() => void>()
+const _pinnedRefs = new Map<string, number>()
 
 export function subscribeToCacheClear(listener: () => void): () => void {
   _clearListeners.add(listener)
@@ -10,12 +11,40 @@ export function subscribeToCacheClear(listener: () => void): () => void {
 
 function evictIfNeeded(): void {
   if (_map.size < MAX_SIZE) return
-  const firstKey = _map.keys().next()
-  if (!firstKey.done) {
-    const url = firstKey.value
-    URL.revokeObjectURL(_map.get(url)!)
-    _map.delete(url)
+  for (const [url, objectUrl] of _map.entries()) {
+    if (!_pinnedRefs.has(url)) {
+      URL.revokeObjectURL(objectUrl)
+      _map.delete(url)
+      return
+    }
   }
+}
+
+export function pinUrls(urls: string[]): void {
+  for (const url of urls) {
+    if (!url) continue
+    _pinnedRefs.set(url, (_pinnedRefs.get(url) || 0) + 1)
+  }
+}
+
+export function releasePinnedUrls(urls: string[]): string[] {
+  const released: string[] = []
+  for (const url of urls) {
+    if (!url) continue
+    const count = _pinnedRefs.get(url) || 0
+    if (count <= 1) {
+      _pinnedRefs.delete(url)
+      if (_map.has(url)) {
+        URL.revokeObjectURL(_map.get(url)!)
+        _map.delete(url)
+      }
+      _fetchPromises.delete(url)
+      released.push(url)
+    } else {
+      _pinnedRefs.set(url, count - 1)
+    }
+  }
+  return released
 }
 
 export function clearMemoryCache(): number {
@@ -26,6 +55,7 @@ export function clearMemoryCache(): number {
   }
   _map.clear()
   _fetchPromises.clear()
+  _pinnedRefs.clear()
   _clearListeners.forEach((fn) => fn())
   return count
 }

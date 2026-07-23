@@ -8,7 +8,6 @@ const MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000
 
 let cleanupTimer: ReturnType<typeof setInterval> | null = null
 let isCleanupRunning = false
-let visibilityHandler: (() => void) | null = null
 
 async function deleteFromCacheAPI(urls: string[]): Promise<string[]> {
   if (urls.length === 0) return []
@@ -82,15 +81,6 @@ export function startPeriodicCleanup(): () => void {
     )
   }, CLEANUP_INTERVAL_MS)
 
-  visibilityHandler = () => {
-    if (!document.hidden) {
-      runCleanup().catch((e) =>
-        console.warn("[CacheCleanup] Visibility run failed:", e)
-      )
-    }
-  }
-  document.addEventListener("visibilitychange", visibilityHandler)
-
   return () => stopPeriodicCleanup()
 }
 
@@ -99,18 +89,6 @@ export function stopPeriodicCleanup(): void {
     clearInterval(cleanupTimer)
     cleanupTimer = null
   }
-  if (visibilityHandler) {
-    document.removeEventListener("visibilitychange", visibilityHandler)
-    visibilityHandler = null
-  }
-}
-
-export function runStartupCleanup(): void {
-  setTimeout(() => {
-    runCleanup().catch((e) =>
-      console.warn("[CacheCleanup] Startup run failed:", e)
-    )
-  }, 1000)
 }
 
 export async function clearAllCache(): Promise<{ deletedCount: number }> {

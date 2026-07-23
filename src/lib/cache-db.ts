@@ -1,5 +1,7 @@
 import type { CacheAccessRecord, CacheManager } from "./cache-types"
 
+const CACHE_NAME = "plot-images"
+
 const DB_NAME = "PlotImageCacheDB"
 const STORE_NAME = "accessTimes"
 const DB_VERSION = 1
@@ -127,6 +129,16 @@ export async function clearAllUrls(): Promise<void> {
     })
   } catch (e) {
     console.warn("[CacheDB] clearAllUrls failed:", e)
+  }
+}
+
+export async function deleteFromCacheAPI(urls: string[]): Promise<void> {
+  if (urls.length === 0) return
+  try {
+    const cache = await caches.open(CACHE_NAME)
+    await Promise.all(urls.map((url) => cache.delete(url)))
+  } catch (e) {
+    console.warn("[CacheDB] deleteFromCacheAPI failed:", e)
   }
 }
 
