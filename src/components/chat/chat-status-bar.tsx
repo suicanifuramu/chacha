@@ -12,7 +12,7 @@ export function ChatStatusBar({ statuses }: ChatStatusBarProps) {
   if (items.length === 0) return null
 
   return (
-    <div className="overflow-x-auto border-b border-border">
+    <div className="touch-scrollable overflow-x-auto border-b border-border">
       <div
         className="flex items-center gap-2 px-3 py-1.5"
         role="status"

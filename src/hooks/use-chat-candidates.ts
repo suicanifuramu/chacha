@@ -53,6 +53,11 @@ export function useChatCandidates(
   const handleRegen = useCallback(
     async (msgId: string) => {
       if (!roomId) return
+      const el = document.getElementById(`msg-swipe-${msgId}`)
+      if (el) {
+        el.style.transition = "none"
+        el.style.transform = "translateX(0px)"
+      }
       swipeKeyRef.current += 1
       setLastSwipeDirection({
         id: msgId,
@@ -230,6 +235,12 @@ export function useChatCandidates(
               : m
           )
         )
+
+        const el = document.getElementById(`msg-swipe-${msgId}`)
+        if (el) {
+          el.style.transition = "none"
+          el.style.transform = "translateX(0px)"
+        }
 
         selectCandidate(msgId, targetCandidate.id).catch((e: unknown) => {
           console.warn(
