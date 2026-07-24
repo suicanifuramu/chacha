@@ -58,7 +58,7 @@ export function useChatRoomInfo(
     // where sessionStorage.chat_plot_id was never written.
     getRoom(roomId)
       .then((data) => {
-        const botId = data.room?.bots?.[0]?.id
+        const botId = data.botId
         if (botId) {
           setPlotId(botId)
           loadBotDetail(botId)

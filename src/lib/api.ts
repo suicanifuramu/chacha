@@ -491,14 +491,8 @@ export function setDefaultUserChatProfile(profileId: string): Promise<{ ok: bool
 }
 
 // ===== Room compat =====
-export function getRoom(roomId: string): Promise<{
-  room?: { bots?: { id: string }[] }
-  title?: string
-}> {
-  return get(`/chat/rooms/${roomId}`) as Promise<{
-    room?: { bots?: { id: string }[] }
-    title?: string
-  }>
+export function getRoom(roomId: string): Promise<RoomCheckResponse> {
+  return get<RoomCheckResponse>(`/chat/rooms/${roomId}`)
 }
 
 export function getRoomModelSetting(
@@ -521,10 +515,10 @@ export function createIntro(
 }
 
 export function selectUserChatProfile(
-  _roomId: string,
-  _profileId: string
+  roomId: string,
+  profileId: string
 ): Promise<{ ok: boolean }> {
-  return Promise.resolve({ ok: true })
+  return patch<{ ok: boolean }>(`/chat/rooms/${roomId}`, { userProfileId: profileId })
 }
 
 export function selectPlotChatProfile(
@@ -534,10 +528,18 @@ export function selectPlotChatProfile(
   return Promise.resolve({ ok: true })
 }
 
-export function getMyPlotChatProfile(
-  _roomId: string
+export async function getMyPlotChatProfile(
+  roomId: string
 ): Promise<{ plotChatProfile?: PlotChatProfile }> {
-  return Promise.resolve({})
+  try {
+    const data = await getRoom(roomId)
+    if (data.userProfileId) {
+      return { plotChatProfile: { id: data.userProfileId, plotId: "", name: "" } }
+    }
+    return {}
+  } catch {
+    return {}
+  }
 }
 
 export function getSessionOverview(): Promise<SessionOverview> {

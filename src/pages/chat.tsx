@@ -66,6 +66,7 @@ export function ChatPage() {
     setResetConfirmOpen,
     handleAvatarTap,
     handleUserMessageTap,
+    handleChangeProfile,
     handleChangeProfileSelect,
     handleChangePlotProfileSelect,
     handleCreateChangeProfile,
@@ -249,6 +250,7 @@ export function ChatPage() {
         onResetRoom={handleRoomReset}
         releaseBodyLock={releaseBodyLock}
         onExitRoom={handleExitRoom}
+        onProfileClick={handleChangeProfile}
       />
 
       <ChatStatusBar statuses={currentStatuses} />
