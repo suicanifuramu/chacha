@@ -31,8 +31,7 @@ export function BottomNav() {
             }}
              className={({ isActive }: { isActive: boolean }) =>
                cn(
-                 "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background",
-                 "flex min-h-11 min-w-11 flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs transition-colors",
+                  "flex min-h-11 min-w-11 flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs transition-colors",
                  isActive
                    ? "text-primary"
                    : "text-muted-foreground hover:text-foreground"
