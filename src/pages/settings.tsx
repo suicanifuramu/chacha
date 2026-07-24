@@ -38,7 +38,7 @@ function formatSeconds(s: number) {
 
 export function SettingsPage() {
   useEffect(() => {
-    document.title = "設定 - Chacha Chat"
+    document.title = "Chacha Chat"
   }, [])
 
   const {

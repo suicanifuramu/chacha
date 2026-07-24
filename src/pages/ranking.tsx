@@ -15,7 +15,7 @@ const TABS = [
 
 export function RankingPage() {
   useEffect(() => {
-    document.title = "ランキング - Chacha Chat"
+    document.title = "Chacha Chat"
   }, [])
 
   const { tab, setTab, displayed, loading, hasMore, sentinelRef } =

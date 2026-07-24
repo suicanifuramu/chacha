@@ -28,10 +28,7 @@ export function ChatPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    document.title = "チャット - Chacha Chat"
-    return () => {
-      document.title = "Chacha Chat"
-    }
+    document.title = "Chacha Chat"
   }, [])
 
   const {

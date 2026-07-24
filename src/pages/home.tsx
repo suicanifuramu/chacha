@@ -11,7 +11,7 @@ import { usePlotNavigation } from "@/hooks/use-plot-navigation"
 
 export function HomePage() {
   useEffect(() => {
-    document.title = "おすすめ - Chacha Chat"
+    document.title = "Chacha Chat"
   }, [])
 
   const { plots, loading, loadingMore, hasMore, sentinelRef, loadPlots } =

@@ -31,7 +31,7 @@ function getPreview(lastMessage: Message | undefined) {
 
 export function RoomsPage() {
   useEffect(() => {
-    document.title = "チャット - Chacha Chat"
+    document.title = "Chacha Chat"
   }, [])
 
   const navigate = useNavigate()
