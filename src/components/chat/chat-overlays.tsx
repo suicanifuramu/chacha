@@ -1,7 +1,7 @@
 import { ProfileSelectSheet } from "@/components/profile-select-sheet"
 import { PlotDetailDialog } from "@/components/plot-detail-dialog"
 import { CharacterDetailSheet } from "@/components/character-detail-sheet"
-import type { UserChatProfile, Character, PlotDetailResponse } from "@/lib/types"
+import type { UserChatProfile, Character, PlotDetailResponse, PlotStatus } from "@/lib/types"
 import type { PlotProfileItem } from "@/components/profile-select-sheet"
 
 interface ChatOverlaysProps {
@@ -17,6 +17,7 @@ interface ChatOverlaysProps {
   plotDetailData: PlotDetailResponse | null
   plotDetailOpen: boolean
   setPlotDetailOpen: (v: boolean) => void
+  currentStatuses: PlotStatus[]
   selectedCharacter: Character | null
   characterDetailOpen: boolean
   setCharacterDetailOpen: (v: boolean) => void
@@ -46,6 +47,7 @@ export function ChatOverlays({
   plotDetailData,
   plotDetailOpen,
   setPlotDetailOpen,
+  currentStatuses,
   selectedCharacter,
   characterDetailOpen,
   setCharacterDetailOpen,
@@ -93,6 +95,7 @@ export function ChatOverlays({
         plot={plotDetailData}
         open={plotDetailOpen}
         onOpenChange={setPlotDetailOpen}
+        currentStatuses={currentStatuses}
       />
 
       <CharacterDetailSheet

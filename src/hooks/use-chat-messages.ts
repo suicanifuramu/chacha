@@ -24,8 +24,10 @@ export function parseBotContents(text: string): ContentItem[] {
   })
 }
 
-function normalizeMessage(m: Message): RuntimeMessage {
-  const candidate = m.candidates?.[0]
+export function normalizeMessage(m: Message): RuntimeMessage {
+  const candidate = m.primaryCandidateId
+    ? m.candidates?.find(c => c.id === m.primaryCandidateId) || m.candidates?.[0]
+    : m.candidates?.[0]
   const text = candidate?.text || m.text || ""
   const base: RuntimeMessage = {
     id: m.id,
@@ -37,6 +39,7 @@ function normalizeMessage(m: Message): RuntimeMessage {
     candidateId: candidate?.id,
     candidates: m.candidates,
     sender: m.authorType === "USER" ? { type: "USER" } : { type: "BOT" },
+    activeStatus: candidate?.status ?? undefined,
   }
   base.contents =
     m.authorType === "USER"

@@ -315,8 +315,12 @@ export const MessageList = memo(function MessageList({
             !isRegening &&
             (() => {
               const cache = candidatesCache[msg.id]
-              const candCount = cache?.candidates?.length || 0
-              const candIdx = cache?.currentIdx ?? -1
+              const msgCandidates = cache?.candidates || msg.candidates
+              const candCount = msgCandidates?.length || 0
+              const activeCandId = msg.candidateId || msg.primaryCandidateId
+              const candIdx = cache?.currentIdx ?? (activeCandId && msgCandidates
+                ? msgCandidates.findIndex(c => c.id === activeCandId)
+                : -1)
               return (
                 <div className="mb-2 ml-10 flex flex-wrap items-center gap-1">
                    <Button
@@ -324,20 +328,19 @@ export const MessageList = memo(function MessageList({
                      size="icon"
                      className="size-7 text-muted-foreground"
                      onClick={() => onRegen(msg.id)}
-                     aria-label="このメッセージを再生成"
+                     aria-label="再生成"
                    >
                      <RefreshCw className="size-3.5" />
                    </Button>
-                   <Button
-                     variant="ghost"
-                     size="icon"
-                     className="size-7 text-muted-foreground"
-                     onClick={() => onSwitchCandidate(msg.id, "prev")}
-                     aria-label="前の候補を表示"
-                     disabled={candCount <= 1}
-                   >
-                     <ChevronLeft className="size-3.5" />
-                   </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-7 text-muted-foreground"
+                      onClick={() => onSwitchCandidate(msg.id, "prev")}
+                      aria-label="前の候補を表示"
+                    >
+                      <ChevronLeft className="size-3.5" />
+                    </Button>
                    {candCount > 1 && (
                      <span
                        className="min-w-6 text-center text-[10px] text-muted-foreground tabular-nums select-none"
@@ -346,16 +349,15 @@ export const MessageList = memo(function MessageList({
                        {candIdx + 1}/{candCount}
                      </span>
                    )}
-                   <Button
-                     variant="ghost"
-                     size="icon"
-                     className="size-7 text-muted-foreground"
-                     onClick={() => onSwitchCandidate(msg.id, "next")}
-                     aria-label="次の候補を表示"
-                     disabled={candCount <= 1}
-                   >
-                     <ChevronRight className="size-3.5" />
-                   </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-7 text-muted-foreground"
+                      onClick={() => onSwitchCandidate(msg.id, "next")}
+                      aria-label="次の候補を表示"
+                    >
+                      <ChevronRight className="size-3.5" />
+                    </Button>
                    <Button
                      variant="ghost"
                      size="icon"

@@ -16,6 +16,7 @@ import type {
   ApiRankingResponse,
   ApiRoomsResponse,
   Bot,
+  CandidatesResponse,
   ChachaUserProfile,
   CreateRoomApiResponse,
   DeleteMessagesResponse,
@@ -26,6 +27,7 @@ import type {
   RecommendQuotaResponse,
   RoomCheckResponse,
   RuntimeMessage,
+  SelectCandidateResponse,
   SmartReplyQuotaResponse,
   SmartReplyResponse,
   UserChatProfile,
@@ -37,7 +39,6 @@ import type {
 import type { IntroMessage } from "./types"
 
 const BASE = "/api/v3"
-
 const CDN_PROXY = "/cdn/unsafe/plain/"
 const GCS_BUCKET = "https://storage.googleapis.com/input-image-bucket-9ef5cbe3"
 
@@ -329,6 +330,55 @@ export async function sendMessageStream<T = unknown>(
 
   if (!res.ok) throw new Error(`Send failed: ${res.status}`)
   await readSSE<T>(res, onEvent, onDone)
+}
+
+// Regen: regenerate last bot message via SSE
+export async function regenMessageStream<T = unknown>(
+  roomId: string,
+  onEvent: (event: T) => void,
+  onDone?: () => void,
+  retry = true
+): Promise<void> {
+  await ensureAccessToken()
+  const headers = new Headers({
+    Authorization: `Bearer ${getAccessToken()}`,
+    "Content-Type": "application/json",
+    ...getCommonHeaders(),
+  })
+  headers.set("Accept", "text/event-stream")
+
+  const res = await fetch(`${BASE}/chat/rooms/${roomId}/regenerate-message`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ experimental_liteMode: true }),
+  })
+
+  if (res.status === 401 && retry) {
+    await refreshSession(true)
+    return regenMessageStream<T>(roomId, onEvent, onDone, false)
+  }
+
+  if (!res.ok) throw new Error(`Regen failed: ${res.status}`)
+  await readSSE<T>(res, onEvent, onDone)
+}
+
+// Get candidates for a message
+export function getCandidates(
+  roomId: string,
+  messageId: string,
+  limit = 100
+): Promise<CandidatesResponse> {
+  return get<CandidatesResponse>(
+    `/chat/rooms/${roomId}/messages/${messageId}/candidates?limit=${limit}`
+  )
+}
+
+// Select a candidate as primary
+export function selectCandidate(
+  messageId: string,
+  candidateId: string
+): Promise<SelectCandidateResponse> {
+  return patch<SelectCandidateResponse>(`/chat/messages/${messageId}/primary-candidate`, { candidateId })
 }
 
 // Edit message (PATCH text)

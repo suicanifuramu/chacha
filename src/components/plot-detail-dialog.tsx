@@ -3,7 +3,7 @@ import { MessageCircle, ScrollText, Users } from "lucide-react"
 import { toast } from "sonner"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { ResponsiveDialog } from "@/components/ui/responsive-dialog"
-import type { Plot, Bot, Character } from "@/lib/types"
+import type { Plot, Bot, Character, PlotStatus } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -22,6 +22,7 @@ interface PlotDetailDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onStartChat?: (plot: Plot) => void
+  currentStatuses?: PlotStatus[]
 }
 
 export function PlotDetailDialog({
@@ -29,6 +30,7 @@ export function PlotDetailDialog({
   open,
   onOpenChange,
   onStartChat,
+  currentStatuses,
 }: PlotDetailDialogProps) {
   const [detail, setDetail] = useState<Bot | null>(null)
   const [loading, setLoading] = useState(false)
@@ -244,7 +246,12 @@ export function PlotDetailDialog({
               statuses={d.statuses
                 .filter((s) => s.label)
                 .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((s) => ({ label: s.label, value: s.defaultValue ?? "" }))}
+                .map((s) => ({
+                  label: s.label,
+                  value:
+                    currentStatuses?.find((cs) => cs.publicId === s.publicId)
+                      ?.defaultValue ?? s.defaultValue ?? "",
+                }))}
             />
           )}
         </div>

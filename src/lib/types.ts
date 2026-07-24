@@ -35,6 +35,7 @@ export interface Message {
   roomId: string
   senderId: string
   text: string
+  primaryCandidateId?: string
   createdAt?: string
   candidates?: Candidate[]
   contents?: ContentItem[]
@@ -330,6 +331,15 @@ export interface RuntimeMessage extends Message {
   candidateId?: string
   isIntro?: boolean
   sender?: { type: string }
+  activeStatus?: Record<string, string>
+}
+
+export interface CandidatesResponse {
+  candidates?: Candidate[]
+}
+
+export interface SelectCandidateResponse {
+  success: boolean
 }
 
 export interface DeleteMessagesResponse {

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from "react"
+import { useCallback, useMemo, useRef, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { releasePinnedUrls } from "@/lib/image-cache"
 import { deleteFromCacheAPI } from "@/lib/cache-db"
@@ -142,7 +142,7 @@ export function ChatPage() {
     lastSwipeDirection,
     handleRegen,
     handleSwitchCandidate,
-  } = useChatCandidates(roomId, messages, setMessages, () => {})
+  } = useChatCandidates(roomId, messages, setMessages, chatRefs)
   const {
     containerRef,
     scrollRef,
@@ -164,6 +164,25 @@ export function ChatPage() {
   chatRefs.current.getViewport = getViewport
 
   const isRegenerating = regenMsgId !== null
+
+  const currentStatuses = useMemo(() => {
+    const lastBotMsg = [...messages]
+      .reverse()
+      .find((m) => m.sender?.type === "BOT")
+    if (!lastBotMsg) return statuses
+    const activeId = lastBotMsg.candidateId || lastBotMsg.primaryCandidateId
+    const activeCandidate =
+      activeId
+        ? lastBotMsg.candidates?.find((c) => c.id === activeId) ||
+          lastBotMsg.candidates?.[0]
+        : lastBotMsg.candidates?.[0]
+    const statusMap = activeCandidate?.status
+    if (!statusMap) return statuses
+    return statuses.map((s) => ({
+      ...s,
+      defaultValue: statusMap[s.key] ?? s.defaultValue,
+    }))
+  }, [messages, statuses])
   const {
     inputValue,
     setInputValue,
@@ -232,7 +251,7 @@ export function ChatPage() {
         onExitRoom={handleExitRoom}
       />
 
-      <ChatStatusBar statuses={statuses} />
+      <ChatStatusBar statuses={currentStatuses} />
 
       <MessageList
         scrollRef={scrollRef}
@@ -322,6 +341,7 @@ export function ChatPage() {
         plotDetailData={plotDetailData}
         plotDetailOpen={plotDetailOpen}
         setPlotDetailOpen={setPlotDetailOpen}
+        currentStatuses={currentStatuses}
         selectedCharacter={selectedCharacter}
         characterDetailOpen={characterDetailOpen}
         setCharacterDetailOpen={setCharacterDetailOpen}
